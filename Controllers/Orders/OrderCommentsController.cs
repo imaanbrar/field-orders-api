@@ -86,6 +86,5 @@ namespace FieldOrdersAPI.Controllers.Orders
                 throw ex;
             }
         }
-
     }
 }
