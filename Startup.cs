@@ -67,10 +67,7 @@ namespace field_orders_api
                 options.UseSqlServer(dbconnect), ServiceLifetime.Transient);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                //c.SwaggerDoc("v1", Microsoft.OpenApi.Models.OpenApiInfo { Title = "ESCM API", Version = "v1" });
-            });
+            services.AddSwaggerGen();
 
             //Add Services
             //services.AddTransient<IProjectService, ProjectService>();
@@ -96,7 +93,7 @@ namespace field_orders_api
                 // specifying the Swagger JSON endpoint.
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ESCM API V1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Field Orders API V1");
                     c.RoutePrefix = string.Empty;
                 });
             }
