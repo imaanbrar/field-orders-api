@@ -25,7 +25,7 @@ namespace FieldOrdersAPI.Controllers.Orders
             _context = context;
         }
 
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderComment>>> GetOrderCommentByOrderID(int id)
         {
             var result = await _context.OrderComment
@@ -34,7 +34,7 @@ namespace FieldOrdersAPI.Controllers.Orders
             return Ok(result);
         }
 
-        [HttpPut, Authorize]
+        [HttpPut]
         public async Task<IActionResult> PutOrderComment([FromForm]int key, [FromForm] string values)
         {
             var orderComment = await _context.OrderComment.FirstOrDefaultAsync(o => o.Id == key);
@@ -68,7 +68,7 @@ namespace FieldOrdersAPI.Controllers.Orders
 
         }
 
-        [HttpDelete, Authorize]
+        [HttpDelete]
         public async Task<IActionResult> DeleteOrderComment([FromForm] int key)
         {
             try

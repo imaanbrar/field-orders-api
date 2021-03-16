@@ -28,7 +28,7 @@ namespace FieldOrdersAPI.Controllers.Orders
             _context = context;
         }
 
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderItem>>> GetOrderItemByOrderID(int id)
         {
             try
@@ -48,7 +48,7 @@ namespace FieldOrdersAPI.Controllers.Orders
             }
         }
 
-        [HttpPut, Authorize]
+        [HttpPut]
         public async Task<IActionResult> PutOrderItem([FromForm]int key, [FromForm] string values)
         {
             var orderItem = _context.OrderItem.FirstOrDefault(o => o.Id == key);
@@ -102,13 +102,13 @@ namespace FieldOrdersAPI.Controllers.Orders
             }
         }
 
-        [HttpDelete, Authorize]
+        [HttpDelete]
         public void DeleteOrderItemPretend([FromForm] int key)
         {
             //do nothing
         }
 
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<bool> CheckDelete(int id)
         {
             if (!ModelState.IsValid)
@@ -135,7 +135,7 @@ namespace FieldOrdersAPI.Controllers.Orders
 
         #region Lookups
 
-        [HttpGet, Authorize]
+        [HttpGet]
         public object GetProjectWBSAsLookup(int projectId, DataSourceLoadOptions loadOptions)
         {
             var lookup = from i in _context.ProjectWbs

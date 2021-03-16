@@ -20,7 +20,50 @@ namespace FieldOrdersAPI.Controllers.Lookups
             _context = context;
         }
 
-        [HttpGet, Authorize]
+        public object GetClientsAsLookup(DataSourceLoadOptions loadOptions)
+        {
+            var lookup = from i in _context.Company
+                         let text = i.Number + " - " + i.Name
+                         orderby i.Number
+                         select new
+                         {
+                             Value = i.Id,
+                             Text = text,
+                             Disabled = !i.IsActive
+                         };
+            return DataSourceLoader.Load(lookup, loadOptions);
+        }
+
+        public object GetProjectsAsLookup(DataSourceLoadOptions loadOptions)
+        {
+            var lookup = from i in _context.Project
+                         let text = i.Number + " - " + i.Name
+                         orderby i.Number
+                         select new
+                         {
+                             Value = i.Id,
+                             Text = text,
+                             i.CompanyId,
+                             Disabled = !i.IsActive
+                         };
+            return DataSourceLoader.Load(lookup, loadOptions);
+        }
+        
+        public object GetProjectWBSAsLookup(int projectId, DataSourceLoadOptions loadOptions)
+        {
+            var lookup = from i in _context.ProjectWbs
+                         where i.ProjectId == projectId
+                         orderby i.TaskCode
+                         select new
+                         {
+                             Value = i.Id,
+                             Text = i.TaskCode + " - " + i.TaskDescription,
+                             Disabled = !i.IsActive
+                         };
+            return DataSourceLoader.Load(lookup, loadOptions);
+        }
+
+        [HttpGet]
         public object GetOrderStatusAsLookup(DataSourceLoadOptions loadOptions)
         {
             var lookup = from i in _context.OrderStatus
@@ -33,7 +76,7 @@ namespace FieldOrdersAPI.Controllers.Lookups
             return DataSourceLoader.Load(lookup, loadOptions);
         }
 
-        [HttpGet, Authorize]
+        [HttpGet]
         public object GetShippingMethodAsLookup(DataSourceLoadOptions loadOptions)
         {
             var lookup = from i in _context.ShippingMethod
