@@ -41,7 +41,7 @@ namespace FieldOrdersAPI.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS;Initial Catalog=FieldOrdersDB;Integrated Security=True");
+                optionsBuilder.UseSqlServer("FieldOrdersDB");
             }
         }
 

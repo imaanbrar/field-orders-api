@@ -67,7 +67,10 @@ namespace field_orders_api
                 options.UseSqlServer(dbconnect), ServiceLifetime.Transient);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
 
             //Add Services
             //services.AddTransient<IProjectService, ProjectService>();

@@ -1,3 +1,8 @@
+-- Create Database
+CREATE DATABASE FieldOrdersDB;
+
+USE FieldOrdersDB;
+
 -- User table
 CREATE TABLE [User].[User](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
