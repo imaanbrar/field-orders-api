@@ -1,18 +1,29 @@
 ﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace FieldOrdersAPI.Models
 {
     public partial class FieldOrdersContext : DbContext
     {
+        private IConfiguration Configuration { get; }
+
+        private User _currentUser;
+        private readonly IHttpContextAccessor _http;
         public FieldOrdersContext()
         {
         }
 
-        public FieldOrdersContext(DbContextOptions<FieldOrdersContext> options)
+        public FieldOrdersContext(DbContextOptions<FieldOrdersContext> options, IConfiguration configuration, IHttpContextAccessor http)
             : base(options)
         {
+            Configuration = configuration;
+            _http = http;
         }
 
         public virtual DbSet<Company> Company { get; set; }
@@ -32,6 +43,68 @@ namespace FieldOrdersAPI.Models
             {
                 optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS;Initial Catalog=FieldOrdersDB;Integrated Security=True");
             }
+        }
+
+        public void SetCurrentUser(User currentUser)
+        {
+            // can't get from UserInfoService because that will be a circular reference; to use UserInfoService requires the auth token to already contain user info
+            _currentUser = currentUser;
+        }
+
+        public override int SaveChanges()
+        {
+            var entries = ChangeTracker.Entries()
+                                       .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (var entityEntry in entries)
+            {
+                if (_currentUser != null)
+                {
+                    entityEntry.Property("ModifiedBy").CurrentValue = _currentUser.Id;
+                    if (entityEntry.State == EntityState.Added)
+                    {
+                        entityEntry.Property("CreatedBy").CurrentValue = _currentUser.Id;
+                    }
+                }
+
+                entityEntry.Property("ModifiedDate").CurrentValue = DateTime.Now;
+                if (entityEntry.State == EntityState.Added)
+                {
+                    entityEntry.Property("CreatedDate").CurrentValue = DateTime.Now;
+                }
+            }
+
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(
+            bool acceptAllChangesOnSuccess,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var entries = ChangeTracker.Entries()
+                                       .Where(e =>
+                                            e.State == EntityState.Added ||
+                                            e.State == EntityState.Modified);
+
+            foreach (var entityEntry in entries)
+            {
+                if (_currentUser != null)
+                {
+                    entityEntry.Property("ModifiedBy").CurrentValue = _currentUser.Id;
+                    if (entityEntry.State == EntityState.Added)
+                    {
+                        entityEntry.Property("CreatedBy").CurrentValue = _currentUser.Id;
+                    }
+                }
+
+                entityEntry.Property("ModifiedDate").CurrentValue = DateTime.Now;
+                if (entityEntry.State == EntityState.Added)
+                {
+                    entityEntry.Property("CreatedDate").CurrentValue = DateTime.Now;
+                }
+            }
+
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
