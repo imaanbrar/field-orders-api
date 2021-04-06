@@ -38,27 +38,6 @@ namespace ESCM.Service.Controllers.Companies
             return DataSourceLoader.Load(lookup, loadOptions);
         }
 
-        [HttpGet, Authorize]
-        public async Task<LoadResult> GetSimilarVendorNames(int fieldVendorId, DataSourceLoadOptions loadOptions)
-        {
-            var fieldVendor = await _context.FieldVendor.SingleAsync(fv => fv.Id == fieldVendorId);
-            var companyName = fieldVendor?.CompanyName;
-
-            var jw = new JaroWinkler();
-
-            var query = _context.Company
-                                .Where(c => c.IsActive)
-                                .OrderBy(c => c.Id)
-                                .Select(c => new
-                                {
-                                    c.Id,
-                                    c.Name,
-                                    Similarity = jw.Similarity(c.Name, companyName),
-                                });
-
-            return await DataSourceLoader.LoadAsync(query, loadOptions);
-        }
-
         //[HttpGet, Authorize]
         //public async Task<LoadResult> GetSimilarVendorContacts(int fieldVendorId, DataSourceLoadOptions loadOptions)
         //{

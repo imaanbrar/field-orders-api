@@ -33,27 +33,11 @@ namespace FieldOrdersAPI.Controllers.Lookups
                          };
             return DataSourceLoader.Load(lookup, loadOptions);
         }
-
-        public object GetProjectsAsLookup(DataSourceLoadOptions loadOptions)
-        {
-            var lookup = from i in _context.Project
-                         let text = i.Number + " - " + i.Name
-                         orderby i.Number
-                         select new
-                         {
-                             Value = i.Id,
-                             Text = text,
-                             i.CompanyId,
-                             Disabled = !i.IsActive
-                         };
-            return DataSourceLoader.Load(lookup, loadOptions);
-        }
         
         public object GetProjectWBSAsLookup(int projectId, DataSourceLoadOptions loadOptions)
         {
             var lookup = from i in _context.ProjectWbs
                          where i.ProjectId == projectId
-                         orderby i.TaskCode
                          select new
                          {
                              Value = i.Id,
@@ -67,19 +51,6 @@ namespace FieldOrdersAPI.Controllers.Lookups
         public object GetOrderStatusAsLookup(DataSourceLoadOptions loadOptions)
         {
             var lookup = from i in _context.OrderStatus
-                         select new
-                         {
-                             Value = i.Id,
-                             Text = i.Value,
-                             Disabled = !i.IsActive
-                         };
-            return DataSourceLoader.Load(lookup, loadOptions);
-        }
-
-        [HttpGet]
-        public object GetShippingMethodAsLookup(DataSourceLoadOptions loadOptions)
-        {
-            var lookup = from i in _context.ShippingMethod
                          select new
                          {
                              Value = i.Id,
