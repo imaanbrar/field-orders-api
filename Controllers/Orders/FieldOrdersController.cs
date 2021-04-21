@@ -32,7 +32,7 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // GET: api/FieldOrders/GetOrders
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<ActionResult> GetOrders()
         {
             var result = await _context.Order
@@ -42,15 +42,9 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // GET: api/FieldOrders/GetOrderList
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<ActionResult> GetOrderList()
         {
-            if (!_userInfo.UserFound)
-            {
-                return NoContent();
-            }
-
-            var userId = _userInfo.UserId;
 
             var order = await _context.Order
                                       .Select(r => new
@@ -68,7 +62,7 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // GET: api/FieldOrders/GetOrderSummaryById?id=5
-        [HttpGet, Authorize]
+        [HttpGet]
         public virtual async Task<IActionResult> GetOrderSummaryById(int id)
         {
             var summary = await _context.Order
@@ -92,7 +86,7 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // GET: api/FieldOrders/GetOrderById?id=5
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<IActionResult> GetOrderById(int id)
         {
             var order = await _context.Order
@@ -110,7 +104,7 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // PUT: api/FieldOrders/PutOrder?id=5
-        [HttpPut, Authorize]
+        [HttpPut]
         public async Task<IActionResult> PutOrder(int id, [FromBody] Order order)
         {
             if (id != order.Id)
@@ -142,7 +136,7 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // POST: api/FieldOrders/PostOrder
-        [HttpPost, Authorize]
+        [HttpPost]
         public virtual async Task<IActionResult> PostOrder([FromBody] Order order)
         {
             order.OrderType = OrderType;
@@ -155,7 +149,7 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // POST: api/FieldOrders/PostOrderUsingGrid
-        [HttpPost, Authorize]
+        [HttpPost]
         public async Task<IActionResult> PostOrderUsingGrid([FromForm] string values)
         {
             var order = new Order();
@@ -185,7 +179,7 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // DELETE: api/FieldOrders/DeleteOrder/5
-        [Authorize, HttpDelete("{id}")]
+        [HttpDelete("{id}")]
         public virtual async Task<IActionResult> DeleteOrder([FromRoute] int id)
         {
             var order = await _context.Order.FindAsync(id);
@@ -203,7 +197,7 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // GET: api/FieldOrders/CheckOrderNumber
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<bool> CheckOrderNumber(int id, int projectId, string number)
         {
             return await _context.Order

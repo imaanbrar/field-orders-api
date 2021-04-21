@@ -1,3 +1,26 @@
+-- Create Database
+CREATE DATABASE FieldOrdersDB;
+GO
+
+USE FieldOrdersDB;
+GO
+
+-- Create Schemas
+CREATE SCHEMA [User];
+GO
+
+CREATE SCHEMA [Company];
+GO
+
+CREATE SCHEMA [Project];
+GO
+
+CREATE SCHEMA [Lookup];
+GO
+
+CREATE SCHEMA [Order];
+GO
+
 -- User table
 CREATE TABLE [User].[User](
 	[ID] [int] IDENTITY(1,1) NOT NULL,

@@ -15,6 +15,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
+using FieldOrdersAPI.Services;
+using FieldOrdersAPI.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace field_orders_api
 {
@@ -44,7 +47,7 @@ namespace field_orders_api
                 options.AddPolicy("CorsPolicy", builder =>
                 {
                     builder
-                    .WithOrigins(Configuration["AppUrl"])
+                    .AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials().Build();
@@ -67,17 +70,21 @@ namespace field_orders_api
                 options.UseSqlServer(dbconnect), ServiceLifetime.Transient);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
 
             //Add Services
-            //services.AddTransient<IProjectService, ProjectService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IUserInfoService, UserInfoService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             // Setting CORS Policy
-            app.UseCors("AzurePolicy");
+            app.UseCors("CorsPolicy");
 
             if (env.IsDevelopment() || env.IsStaging())
             {
@@ -107,13 +114,6 @@ namespace field_orders_api
 
             app.UseHttpsRedirection();
             app.UseMvc();
-        }
-
-        void ProcessException(Exception ex, string message)
-        {
-            // Log exceptions here. For instance:
-            System.Diagnostics.Debug.WriteLine("[{0}]: Exception occured. Message: '{1}'. Exception Details:\r\n{2}",
-                DateTime.Now, message, ex);
         }
     }
 }
