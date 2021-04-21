@@ -17,6 +17,7 @@ namespace FieldOrdersAPI.Models
         public DateTime? CreatedDate { get; set; }
         public int? ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
+        public int? LibraryItemId { get; set; }
 
         public Order Order { get; set; }
         public ProjectWbs Wbs { get; set; }

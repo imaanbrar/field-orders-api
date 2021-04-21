@@ -31,7 +31,7 @@ namespace FieldOrdersAPI.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-               optionsBuilder.UseSqlServer("FieldOrdersDB");
+                optionsBuilder.UseSqlServer("FieldOrdersDB");
             }
         }
 

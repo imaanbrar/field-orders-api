@@ -30,7 +30,7 @@ namespace FieldOrdersAPI.Services
             // TODO: At some point this should include default user roles and project roles for authorization
             CurrentUser = context.User.FirstOrDefault(u => u.Username == http.HttpContext.User.Identity.Name);
 
-            context.SetCurrentUser(CurrentUser);
+            //context.SetCurrentUser(CurrentUser);
         }
     }
 }

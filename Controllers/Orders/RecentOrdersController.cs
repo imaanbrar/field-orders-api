@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace FieldOrdersAPI.Controllers.Order
+namespace FieldOrdersAPI.Controllers.Orders
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
