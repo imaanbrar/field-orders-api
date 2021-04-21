@@ -10,6 +10,7 @@ namespace FieldOrdersAPI.Models
             FieldVendor = new HashSet<FieldVendor>();
             OrderComment = new HashSet<OrderComment>();
             OrderItem = new HashSet<OrderItem>();
+            RecentOrder = new HashSet<RecentOrder>();
         }
 
         public int Id { get; set; }
@@ -41,5 +42,6 @@ namespace FieldOrdersAPI.Models
         public ICollection<FieldVendor> FieldVendor { get; set; }
         public ICollection<OrderComment> OrderComment { get; set; }
         public ICollection<OrderItem> OrderItem { get; set; }
+        public ICollection<RecentOrder> RecentOrder { get; set; }
     }
 }

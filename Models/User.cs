@@ -5,6 +5,11 @@ namespace FieldOrdersAPI.Models
 {
     public partial class User
     {
+        public User()
+        {
+            RecentOrder = new HashSet<RecentOrder>();
+        }
+
         public int Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
@@ -16,5 +21,7 @@ namespace FieldOrdersAPI.Models
         public DateTime? CreatedDate { get; set; }
         public int? ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
+
+        public ICollection<RecentOrder> RecentOrder { get; set; }
     }
 }

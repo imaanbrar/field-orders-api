@@ -318,6 +318,36 @@ GO
 ALTER TABLE [Company].[FieldVendor] CHECK CONSTRAINT [FieldVendorContactMustHaveLocation]
 GO
 
+ -- Recent Orders table
+CREATE TABLE [Order].[RecentOrder](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UserID] [int] NOT NULL,
+	[OrderID] [int] NOT NULL,
+	[CreatedDate] [datetime] NOT NULL,
+	[CreatedBy] [int] NULL,
+	[ModifiedBy] [int] NULL,
+	[ModifiedDate] [datetime] NULL,
+ CONSTRAINT [PK_RecentOrder] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [Order].[RecentOrder]  WITH CHECK ADD  CONSTRAINT [FK_RecentOrder_Order] FOREIGN KEY([OrderID])
+REFERENCES [Order].[Order] ([ID])
+GO
+
+ALTER TABLE [Order].[RecentOrder] CHECK CONSTRAINT [FK_RecentOrder_Order]
+GO
+
+ALTER TABLE [Order].[RecentOrder]  WITH CHECK ADD  CONSTRAINT [FK_RecentOrder_User] FOREIGN KEY([UserID])
+REFERENCES [User].[User] ([ID])
+GO
+
+ALTER TABLE [Order].[RecentOrder] CHECK CONSTRAINT [FK_RecentOrder_User]
+GO
+
 
 
 

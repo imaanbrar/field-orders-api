@@ -1,29 +1,18 @@
 ﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
 
 namespace FieldOrdersAPI.Models
 {
     public partial class FieldOrdersContext : DbContext
     {
-        private IConfiguration Configuration { get; }
-
-        private User _currentUser;
-        private readonly IHttpContextAccessor _http;
         public FieldOrdersContext()
         {
         }
 
-        public FieldOrdersContext(DbContextOptions<FieldOrdersContext> options, IConfiguration configuration, IHttpContextAccessor http)
+        public FieldOrdersContext(DbContextOptions<FieldOrdersContext> options)
             : base(options)
         {
-            Configuration = configuration;
-            _http = http;
         }
 
         public virtual DbSet<Company> Company { get; set; }
@@ -34,6 +23,7 @@ namespace FieldOrdersAPI.Models
         public virtual DbSet<OrderStatus> OrderStatus { get; set; }
         public virtual DbSet<Project> Project { get; set; }
         public virtual DbSet<ProjectWbs> ProjectWbs { get; set; }
+        public virtual DbSet<RecentOrder> RecentOrder { get; set; }
         public virtual DbSet<ShippingMethod> ShippingMethod { get; set; }
         public virtual DbSet<User> User { get; set; }
 
@@ -41,70 +31,8 @@ namespace FieldOrdersAPI.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS;Initial Catalog=FieldOrdersDB;Integrated Security=True");
+               optionsBuilder.UseSqlServer("FieldOrdersDB");
             }
-        }
-
-        public void SetCurrentUser(User currentUser)
-        {
-            // can't get from UserInfoService because that will be a circular reference; to use UserInfoService requires the auth token to already contain user info
-            _currentUser = currentUser;
-        }
-
-        public override int SaveChanges()
-        {
-            var entries = ChangeTracker.Entries()
-                                       .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
-
-            foreach (var entityEntry in entries)
-            {
-                if (_currentUser != null)
-                {
-                    entityEntry.Property("ModifiedBy").CurrentValue = _currentUser.Id;
-                    if (entityEntry.State == EntityState.Added)
-                    {
-                        entityEntry.Property("CreatedBy").CurrentValue = _currentUser.Id;
-                    }
-                }
-
-                entityEntry.Property("ModifiedDate").CurrentValue = DateTime.Now;
-                if (entityEntry.State == EntityState.Added)
-                {
-                    entityEntry.Property("CreatedDate").CurrentValue = DateTime.Now;
-                }
-            }
-
-            return base.SaveChanges();
-        }
-
-        public override Task<int> SaveChangesAsync(
-            bool acceptAllChangesOnSuccess,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var entries = ChangeTracker.Entries()
-                                       .Where(e =>
-                                            e.State == EntityState.Added ||
-                                            e.State == EntityState.Modified);
-
-            foreach (var entityEntry in entries)
-            {
-                if (_currentUser != null)
-                {
-                    entityEntry.Property("ModifiedBy").CurrentValue = _currentUser.Id;
-                    if (entityEntry.State == EntityState.Added)
-                    {
-                        entityEntry.Property("CreatedBy").CurrentValue = _currentUser.Id;
-                    }
-                }
-
-                entityEntry.Property("ModifiedDate").CurrentValue = DateTime.Now;
-                if (entityEntry.State == EntityState.Added)
-                {
-                    entityEntry.Property("CreatedDate").CurrentValue = DateTime.Now;
-                }
-            }
-
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -435,6 +363,33 @@ namespace FieldOrdersAPI.Models
                     .HasForeignKey(d => d.ProjectId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProjectWBS_Project");
+            });
+
+            modelBuilder.Entity<RecentOrder>(entity =>
+            {
+                entity.ToTable("RecentOrder", "Order");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.OrderId).HasColumnName("OrderID");
+
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.RecentOrder)
+                    .HasForeignKey(d => d.OrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RecentOrder_Order");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.RecentOrder)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RecentOrder_User");
             });
 
             modelBuilder.Entity<ShippingMethod>(entity =>
