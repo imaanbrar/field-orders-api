@@ -22,7 +22,7 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // GET: api/RecentOrders/GetRecentOrders
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<ActionResult> GetRecentOrders(string type)
         {
             var query = _context.RecentOrder;
@@ -52,57 +52,67 @@ namespace FieldOrdersAPI.Controllers.Orders
         }
 
         // PUT: api/RecentOrders/UpdateRecentOrderList
-        [HttpPost, Authorize]
+        [HttpPost]
         public async Task<IActionResult> UpdateRecentOrderList([FromBody] int orderId)
         {
-
-            var order = await _context.Order.FirstOrDefaultAsync(o => o.Id == orderId);
-            var userId = 1;
-
-            if (userId == 0 || order == null)
+            try
             {
-                return NotFound();
-            }
 
-            var recentOrderList = await _context.RecentOrder
-                                                .Where(x => x.UserId == userId && x.Order.OrderType == order.OrderType)
-                                                .Include(x => x.Order)
-                                                .ToListAsync();
 
-            var isReplaced = order.StatusId == (int)eOrderStatus.eReplaced;
-            var existingRecord = recentOrderList.FirstOrDefault(r => r.OrderId == order.Id);
+                var order = await _context.Order.FirstOrDefaultAsync(o => o.Id == orderId);
+                var userId = 1;
 
-            if (existingRecord != null && !isReplaced)
-            {
-                existingRecord.CreatedDate = DateTime.Now;
-
-                _context.Entry(existingRecord).State = EntityState.Modified;
-            }
-            else if (existingRecord != null)
-            {
-                _context.RecentOrder.Remove(existingRecord);
-            }
-            else
-            {
-                if (recentOrderList.Count >= 5)
+                if (userId == 0 || order == null)
                 {
-                    var lastOrder = recentOrderList.OrderBy(x => x.CreatedDate).First();
-
-                    _context.RecentOrder.Remove(lastOrder);
+                    return NotFound();
                 }
 
-                await _context.RecentOrder.AddAsync(
-                    new RecentOrder
+                var recentOrderList = await _context.RecentOrder
+                                                    .Where(x => x.UserId == userId && x.Order.OrderType == order.OrderType)
+                                                    .Include(x => x.Order)
+                                                    .ToListAsync();
+
+                var isReplaced = order.StatusId == (int)eOrderStatus.eReplaced;
+                var existingRecord = recentOrderList.FirstOrDefault(r => r.OrderId == order.Id);
+
+                if (existingRecord != null && !isReplaced)
+                {
+                    existingRecord.CreatedDate = DateTime.Now;
+
+                    _context.Entry(existingRecord).State = EntityState.Modified;
+                }
+                else if (existingRecord != null)
+                {
+                    _context.RecentOrder.Remove(existingRecord);
+                }
+                else
+                {
+                    if (recentOrderList.Count >= 5)
                     {
-                        OrderId = orderId,
-                        UserId = userId
+                        var lastOrder = recentOrderList.OrderBy(x => x.CreatedDate).First();
+
+                        _context.RecentOrder.Remove(lastOrder);
                     }
-                );
+
+                    await _context.RecentOrder.AddAsync(
+                        new RecentOrder
+                        {
+                            OrderId = orderId,
+                            UserId = userId,
+                            CreatedDate = DateTime.Now,
+                            CreatedBy = 1
+                        }
+                    );
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(orderId);
             }
-
-            await _context.SaveChangesAsync();
-
-            return Ok(orderId);
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

@@ -255,8 +255,6 @@ namespace FieldOrdersAPI.Models
                     .IsRequired()
                     .IsUnicode(false);
 
-                entity.Property(e => e.LibraryItemId).HasColumnName("LibraryItemID");
-
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.OrderId).HasColumnName("OrderID");

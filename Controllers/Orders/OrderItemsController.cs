@@ -33,8 +33,6 @@ namespace FieldOrdersAPI.Controllers.Orders
         {
             try
             {
-
-                
                 var result = await _context.OrderItem
                     .Where(x => x.OrderId == id)
                     .OrderBy(x => x.ItemNumber)

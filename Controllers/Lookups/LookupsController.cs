@@ -20,6 +20,7 @@ namespace FieldOrdersAPI.Controllers.Lookups
             _context = context;
         }
 
+        [HttpGet]
         public object GetClientsAsLookup(DataSourceLoadOptions loadOptions)
         {
             var lookup = from i in _context.Company
@@ -34,6 +35,7 @@ namespace FieldOrdersAPI.Controllers.Lookups
             return DataSourceLoader.Load(lookup, loadOptions);
         }
 
+        [HttpGet]
         public object GetProjectsAsLookup(DataSourceLoadOptions loadOptions)
         {
             var lookup = from i in _context.Project
@@ -48,7 +50,8 @@ namespace FieldOrdersAPI.Controllers.Lookups
                          };
             return DataSourceLoader.Load(lookup, loadOptions);
         }
-        
+
+        [HttpGet]
         public object GetProjectWBSAsLookup(int projectId, DataSourceLoadOptions loadOptions)
         {
             var lookup = from i in _context.ProjectWbs
